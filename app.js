@@ -28,11 +28,55 @@ function promptUser() {
     .then((response) => {
       switch (response.action) {
         case "View all departments":
-            
+            dbQueries.viewRoles()
+      .then(results => {
+        
+        const formattedResults = results.map(result => ({
+          id: result.id,
+          title: result.title
+        }));
+  
+        
+        console.table(formattedResults);
+        promptUser();
+      })
+      .catch(error => console.error(error));
           break;
         case "View all roles":
+            dbQueries.viewRoles()
+    .then(results => {
+      
+      const formattedResults = results.map(result => ({
+        id: result.id,
+        title: result.title,
+        salary: result.salary,
+        department: result.department
+      }));
+
+      
+      console.table(formattedResults);
+      promptUser();
+    })
+    .catch(error => console.error(error));
           break;
         case "View all employees":
+            dbQueries.viewEmployees()
+            .then(results => {
+              
+              const formattedResults = results.map(result => ({
+                id: result.id,
+                first_name: result.first_name,
+                last_name: result.last_name,
+                department: result.department,
+                salary: result.salary,
+                manager_id: result.manager_id
+              }));
+        
+              
+              console.table(formattedResults);
+              promptUser();
+            })
+            .catch(error => console.error(error));
           break;
         case "Add a department":
           break;
