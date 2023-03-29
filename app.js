@@ -79,10 +79,105 @@ function promptUser() {
             .catch(error => console.error(error));
           break;
         case "Add a department":
+          inquirer
+          .prompt([
+            {
+              type: 'input',
+              name: 'departmentName',
+              message: 'Enter the name of the new department:',
+            },
+          ])
+          .then((response) => {
+            dbQueries
+              .addDepartment(response.departmentName)
+              .then(() => {
+                console.log('Department added successfully.');
+                promptUser();
+              })
+              .catch((error) => console.error(error));
+          });
           break;
         case "Add a role":
+          dbQueries.viewDepartments().then((departments) => {
+            inquirer
+              .prompt([
+                {
+                  type: 'input',
+                  name: 'roleTitle',
+                  message: 'Enter the title of the new role:',
+                },
+                {
+                  type: 'number',
+                  name: 'roleSalary',
+                  message: 'Enter the salary of the new role:',
+                },
+                {
+                  type: 'list',
+                  name: 'roleDepartment',
+                  message: 'Select the department of the new role:',
+                  choices: departments.map((department) => ({
+                    name: department.name,
+                    value: department.id,
+                  })),
+                },
+              ])
+              .then((response) => {
+                dbQueries
+                  .addRole(response.roleTitle, response.roleSalary, response.roleDepartment)
+                  .then(() => {
+                    console.log('Role added successfully.');
+                    promptUser();
+                  })
+                  .catch((error) => console.error(error));
+              });
+          });
           break;
         case "Add an employee":
+          Promise.all([dbQueries.viewRoles(), dbQueries.viewEmployees()]).then(([roles, managers]) => {
+            inquirer
+              .prompt([
+                {
+                  type: 'input',
+                  name: 'employeeFirstName',
+                  message: 'Enter the first name of the new employee:',
+                },
+                {
+                  type: 'input',
+                  name: 'employeeLastName',
+                  message: 'Enter the last name of the new employee:',
+                },
+                {
+                  type: 'list',
+                  name: 'employeeRole',
+                  message: 'Select the role of the new employee:',
+                  choices: roles.map((role) => ({
+                    name: `${role.title} (${role.department})`,
+                    value: role.id,
+                  })),
+                },
+                {
+                  type: 'list',
+                  name: 'employeeManager',
+                  message: 'Select the manager of the new employee:',
+                  choices: [
+                    { name: 'None', value: null },
+                    ...managers.map((manager) => ({
+                      name: `${manager.first_name} ${manager.last_name}`,
+                      value: manager.id,
+                    })),
+                  ],
+                },
+              ])
+              .then((response) => {
+                dbQueries
+                  .addEmployee(response.employeeFirstName, response.employeeLastName, response.employeeRole, response.employeeManager)
+                  .then(() => {
+                    console.log('Employee added successfully.');
+                    promptUser();
+                  })
+                  .catch((error) => console.error(error));
+              });
+          });
           break;
         case "Update an employee role":
           break;

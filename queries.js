@@ -35,6 +35,24 @@ class DatabaseQueries {
         `);
       }
 
+      addDepartment(name) {
+        return this._query("INSERT INTO department (name) VALUES (?)", [name]);
+      }
+    
+      addRole(title, salary, department_id) {
+        return this._query(
+          "INSERT INTO role (title, salary, department_id) VALUES (?, ?, ?)",
+          [title, salary, department_id]
+        );
+      }
+    
+      addEmployee(first_name, last_name, role_id, manager_id) {
+        return this._query(
+          "INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (?, ?, ?, ?)",
+          [first_name, last_name, role_id, manager_id]
+        );
+      }
+
 
 }
 
